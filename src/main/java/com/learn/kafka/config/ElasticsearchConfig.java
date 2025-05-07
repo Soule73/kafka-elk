@@ -3,10 +3,15 @@ package com.learn.kafka.config;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import org.apache.http.HttpHost;
+<<<<<<< HEAD
 import org.apache.http.HttpResponseInterceptor;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
+=======
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
+>>>>>>> c6756da (Upgrade packages to latest versions)
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +20,7 @@ import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 @Configuration
 public class ElasticsearchConfig {
 
+<<<<<<< HEAD
     @Value("${elasticsearch.host}")
     private String elasticsearchHost;
 
@@ -41,11 +47,29 @@ public class ElasticsearchConfig {
         RestClient restClient = builder.build();
 
         // Configurer le transport
+=======
+    @Bean
+    public ElasticsearchClient elasticsearchClient() {
+        // Configurer RestClient avec un en-tête compatible Elasticsearch 7.x
+        RestClientBuilder builder = RestClient.builder(new HttpHost("localhost", 9200));
+        builder.setDefaultHeaders(new org.apache.http.Header[]{
+            // Forcer le Content-Type à "application/json"
+                new org.apache.http.message.BasicHeader("Content-Type", "application/json")
+        });
+
+        RestClient restClient = builder.build();
+
+        // Configurer le transport avec JacksonJsonpMapper
+>>>>>>> c6756da (Upgrade packages to latest versions)
         RestClientTransport transport = new RestClientTransport(
                 restClient,
                 new JacksonJsonpMapper(new ObjectMapper())
         );
 
+<<<<<<< HEAD
+=======
+        // Retourner le client Elasticsearch
+>>>>>>> c6756da (Upgrade packages to latest versions)
         return new ElasticsearchClient(transport);
     }
 }

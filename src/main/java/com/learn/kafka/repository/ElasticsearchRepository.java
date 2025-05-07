@@ -1,6 +1,7 @@
 package com.learn.kafka.repository;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+<<<<<<< HEAD
 import co.elastic.clients.elasticsearch.indices.CreateIndexRequest;
 import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
 import co.elastic.clients.elasticsearch.core.BulkRequest;
@@ -9,11 +10,19 @@ import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import com.learn.kafka.model.ExchangeRate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+=======
+import co.elastic.clients.elasticsearch.core.IndexRequest;
+import com.learn.kafka.model.ExchangeRate;
+import org.springframework.beans.factory.annotation.Autowired;
+>>>>>>> c6756da (Upgrade packages to latest versions)
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 import java.util.List;
+<<<<<<< HEAD
 import java.util.stream.Collectors;
+=======
+>>>>>>> c6756da (Upgrade packages to latest versions)
 
 @Repository
 public class ElasticsearchRepository {
@@ -21,6 +30,7 @@ public class ElasticsearchRepository {
     @Autowired
     private ElasticsearchClient elasticsearchClient;
 
+<<<<<<< HEAD
     @Value("${elasticsearch.index.name}")
     private String indexName;
 
@@ -73,5 +83,19 @@ public class ElasticsearchRepository {
         if (!response.acknowledged()) {
             throw new RuntimeException("La création de l'index Elasticsearch a échoué.");
         }
+=======
+    public void indexAll(List<ExchangeRate> rates) {
+        rates.forEach(rate -> {
+            try {
+                IndexRequest<ExchangeRate> request = new IndexRequest.Builder<ExchangeRate>()
+                        .index("exchange-rates")
+                        .document(rate)
+                        .build();
+                elasticsearchClient.index(request);
+            } catch (IOException e) {
+                throw new RuntimeException("Erreur lors de l'indexation dans Elasticsearch : " + e.getMessage());
+            }
+        });
+>>>>>>> c6756da (Upgrade packages to latest versions)
     }
 }
