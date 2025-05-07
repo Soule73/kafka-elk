@@ -1,28 +1,27 @@
 package com.learn.kafka.producer;
 
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.xcontent.XContentType;
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.IndexRequest;
+import co.elastic.clients.elasticsearch.core.IndexResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.Map;
 
 @Service
 public class ElasticsearchService {
 
     @Autowired
-    private RestHighLevelClient restHighLevelClient;
+    private ElasticsearchClient elasticsearchClient;
 
-    public String indexDocument(String index, String id, Map<String, Object> document) throws IOException {
-        IndexRequest request = new IndexRequest(index)
+    public String indexDocument(String index, String id, Object document) throws IOException {
+        IndexRequest<Object> request = new IndexRequest.Builder<>()
+                .index(index)
                 .id(id)
-                .source(document, XContentType.JSON);
+                .document(document)
+                .build();
 
-        IndexResponse response = restHighLevelClient.index(request, RequestOptions.DEFAULT);
-        return response.getId();
+        IndexResponse response = elasticsearchClient.index(request);
+        return response.id(); // Retourner l'ID du document indexé
     }
 }

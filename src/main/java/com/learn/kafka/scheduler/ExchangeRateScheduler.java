@@ -1,5 +1,6 @@
-package com.learn.kafka.producer;
+package com.learn.kafka.scheduler;
 
+import com.learn.kafka.service.ExchangeRateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -14,9 +15,9 @@ public class ExchangeRateScheduler {
     @Autowired
     private ExchangeRateService exchangeRateService;
 
-    // Exécuter toutes les 60 secondes
+    // Planifier la tâche pour s'exécuter toutes les 60 secondes
     @Scheduled(fixedRate = 60000)
-    public void fetchAndProcessExchangeRates() {
+    public void fetchExchangeRates() {
         logger.info("Début de l'exécution du scheduler pour récupérer les taux de change...");
         try {
             String result = exchangeRateService.fetchAndStoreExchangeRates();
