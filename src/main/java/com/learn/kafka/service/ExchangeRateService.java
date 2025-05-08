@@ -5,13 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.learn.kafka.model.ExchangeRate;
 import com.learn.kafka.repository.ElasticsearchRepository;
 import com.learn.kafka.repository.MongoDBRepository;
-import org.springframework.kafka.core.KafkaTemplate;
+import com.learn.kafka.repository.KafkaRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,18 +24,20 @@ public class ExchangeRateService {
 
     private final ElasticsearchRepository elasticsearchRepository;
     private final MongoDBRepository mongoDBRepository;
-    private final KafkaTemplate<String, String> kafkaTemplate;
-    private final RestTemplate restTemplate = new RestTemplate(); // Utilisation directe de RestTemplate
+    private final KafkaRepository kafkaRepository;
+    private final RestTemplate restTemplate = new RestTemplate();
 
-    private final String apiUrl = "https://api.exchangerate-api.com/v4/latest/USD";
+    @Value("${exchange-rate.api.url}")
+    private String apiUrl;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public ExchangeRateService(ElasticsearchRepository elasticsearchRepository,
                                MongoDBRepository mongoDBRepository,
-                               KafkaTemplate<String, String> kafkaTemplate) {
+                               KafkaRepository kafkaRepository) {
         this.elasticsearchRepository = elasticsearchRepository;
         this.mongoDBRepository = mongoDBRepository;
-        this.kafkaTemplate = kafkaTemplate;
+        this.kafkaRepository = kafkaRepository;
     }
 
     public List<ExchangeRate> formatExchangeRates(Map<String, Object> response) {
@@ -61,10 +63,10 @@ public class ExchangeRateService {
         return formattedRates;
     }
 
-    public String fetchAndStoreExchangeRates() throws IOException {
+    public String fetchAndStoreExchangeRates() {
         logger.info("Début de la récupération des taux de change depuis l'API...");
         @SuppressWarnings("unchecked")
-        Map<String, Object> response = restTemplate.getForObject(apiUrl, Map.class); // Utilisation directe de RestTemplate
+        Map<String, Object> response = restTemplate.getForObject(apiUrl, Map.class);
 
         if (response == null || !response.containsKey("rates")) {
             throw new RuntimeException("Impossible de récupérer les données de l'API.");
@@ -72,15 +74,13 @@ public class ExchangeRateService {
 
         logger.info("Données récupérées avec succès depuis l'API.");
 
-        // Formater les données
         List<ExchangeRate> formattedRates = formatExchangeRates(response);
 
-        // Publier sur Kafka
         logger.info("Publication des taux sur Kafka...");
         for (ExchangeRate rate : formattedRates) {
             try {
                 String rateJson = objectMapper.writeValueAsString(rate);
-                kafkaTemplate.send("exchange-rates-topic", rateJson);
+                kafkaRepository.sendMessageToDefaultTopic(rateJson);
             } catch (JsonProcessingException e) {
                 logger.error("Erreur lors de la conversion en JSON : {}", e.getMessage());
             }
