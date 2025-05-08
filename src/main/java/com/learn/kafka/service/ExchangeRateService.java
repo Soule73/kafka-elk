@@ -12,7 +12,8 @@ import org.springframework.web.client.RestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,8 +44,12 @@ public class ExchangeRateService {
     public List<ExchangeRate> formatExchangeRates(Map<String, Object> response) {
         logger.info("Formattage des taux de change...");
         List<ExchangeRate> formattedRates = new ArrayList<>();
-        String baseCurrency = (String) response.get("base");
-        String date = (String) response.get("date");
+
+        // Extraire les informations de base
+        String baseCurrency = (String) response.get("base_code");
+
+        // Utiliser l'heure actuelle comme timestamp
+        String timestamp = ZonedDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
         @SuppressWarnings("unchecked")
         Map<String, Number> rates = (Map<String, Number>) response.get("rates");
@@ -54,8 +59,8 @@ public class ExchangeRateService {
             exchangeRate.setBase(baseCurrency);
             exchangeRate.setCurrency(currency);
             exchangeRate.setRate(rate.doubleValue());
-            exchangeRate.setTimestamp(Instant.now().toString());
-            exchangeRate.setDate(date);
+            exchangeRate.setTimestamp(timestamp);
+            exchangeRate.setDate(ZonedDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)); 
             formattedRates.add(exchangeRate);
         });
 
@@ -68,7 +73,7 @@ public class ExchangeRateService {
         @SuppressWarnings("unchecked")
         Map<String, Object> response = restTemplate.getForObject(apiUrl, Map.class);
 
-        if (response == null || !response.containsKey("rates")) {
+        if (response == null || !"success".equals(response.get("result"))) {
             throw new RuntimeException("Impossible de récupérer les données de l'API.");
         }
 
