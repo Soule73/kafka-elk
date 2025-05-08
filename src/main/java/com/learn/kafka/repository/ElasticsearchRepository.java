@@ -3,6 +3,9 @@ package com.learn.kafka.repository;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 0729c7d (refactor code)
 import co.elastic.clients.elasticsearch.indices.CreateIndexRequest;
 import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
 import co.elastic.clients.elasticsearch.core.BulkRequest;
@@ -11,6 +14,7 @@ import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import com.learn.kafka.model.ExchangeRate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+<<<<<<< HEAD
 =======
 import co.elastic.clients.elasticsearch.core.IndexRequest;
 =======
@@ -21,6 +25,8 @@ import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import com.learn.kafka.model.ExchangeRate;
 import org.springframework.beans.factory.annotation.Autowired;
 >>>>>>> c6756da (Upgrade packages to latest versions)
+=======
+>>>>>>> 0729c7d (refactor code)
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
@@ -40,6 +46,7 @@ public class ElasticsearchRepository {
     @Autowired
     private ElasticsearchClient elasticsearchClient;
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     @Value("${elasticsearch.index.name}")
     private String indexName;
@@ -94,13 +101,23 @@ public class ElasticsearchRepository {
             throw new RuntimeException("La création de l'index Elasticsearch a échoué.");
         }
 =======
+=======
+    @Value("${elasticsearch.index.name}")
+    private String indexName;
+
+>>>>>>> 0729c7d (refactor code)
     public void indexAll(List<ExchangeRate> rates) {
         try {
+            // Vérifier si l'index existe, sinon le créer avec un mapping explicite
+            if (!elasticsearchClient.indices().exists(e -> e.index(indexName)).value()) {
+                createIndexWithMapping();
+            }
+
             // Préparer les opérations Bulk
             List<BulkOperation> operations = rates.stream()
                     .map(rate -> BulkOperation.of(op -> op
                             .index(idx -> idx
-                                    .index("exchange-rates")
+                                    .index(indexName)
                                     .document(rate)
                             )
                     ))
@@ -125,5 +142,23 @@ public class ElasticsearchRepository {
             throw new RuntimeException("Erreur lors de l'indexation en Bulk dans Elasticsearch : " + e.getMessage());
         }
 >>>>>>> c550199 (Exchange API, realtime time application)
+    }
+
+    private void createIndexWithMapping() throws IOException {
+        CreateIndexRequest request = new CreateIndexRequest.Builder()
+                .index(indexName)
+                .mappings(m -> m
+                        .properties("timestamp", p -> p.date(d -> d))
+                        .properties("base", p -> p.keyword(k -> k))
+                        .properties("currency", p -> p.keyword(k -> k))
+                        .properties("rate", p -> p.double_(d -> d))
+                )
+                .build();
+
+        CreateIndexResponse response = elasticsearchClient.indices().create(request);
+
+        if (!response.acknowledged()) {
+            throw new RuntimeException("La création de l'index Elasticsearch a échoué.");
+        }
     }
 }

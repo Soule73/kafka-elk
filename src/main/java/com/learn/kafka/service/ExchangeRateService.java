@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 =======
@@ -31,6 +32,10 @@ import java.io.IOException;
 >>>>>>> c550199 (Exchange API, realtime time application)
 import java.time.Instant;
 >>>>>>> c6756da (Upgrade packages to latest versions)
+=======
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+>>>>>>> 0729c7d (refactor code)
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -90,16 +95,22 @@ public class ExchangeRateService {
         logger.info("Formattage des taux de change...");
         List<ExchangeRate> formattedRates = new ArrayList<>();
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 0729c7d (refactor code)
 
         // Extraire les informations de base
         String baseCurrency = (String) response.get("base_code");
 
         // Utiliser l'heure actuelle comme timestamp
         String timestamp = ZonedDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+<<<<<<< HEAD
 =======
         String baseCurrency = (String) response.get("base");
         String date = (String) response.get("date");
 >>>>>>> c6756da (Upgrade packages to latest versions)
+=======
+>>>>>>> 0729c7d (refactor code)
 
         @SuppressWarnings("unchecked")
         Map<String, Number> rates = (Map<String, Number>) response.get("rates");
@@ -110,12 +121,17 @@ public class ExchangeRateService {
             exchangeRate.setCurrency(currency);
             exchangeRate.setRate(rate.doubleValue());
 <<<<<<< HEAD
+<<<<<<< HEAD
             exchangeRate.setTimestamp(timestamp);
             exchangeRate.setDate(ZonedDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)); 
 =======
             exchangeRate.setTimestamp(Instant.now().toString());
             exchangeRate.setDate(date);
 >>>>>>> c6756da (Upgrade packages to latest versions)
+=======
+            exchangeRate.setTimestamp(timestamp);
+            exchangeRate.setDate(ZonedDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)); 
+>>>>>>> 0729c7d (refactor code)
             formattedRates.add(exchangeRate);
         });
 
@@ -131,6 +147,7 @@ public class ExchangeRateService {
         Map<String, Object> response = restTemplate.getForObject(apiUrl, Map.class);
 
         if (response == null || !"success".equals(response.get("result"))) {
+<<<<<<< HEAD
 =======
     public String fetchAndStoreExchangeRates() throws IOException {
 =======
@@ -142,6 +159,8 @@ public class ExchangeRateService {
 
         if (response == null || !response.containsKey("rates")) {
 >>>>>>> c6756da (Upgrade packages to latest versions)
+=======
+>>>>>>> 0729c7d (refactor code)
             throw new RuntimeException("Impossible de récupérer les données de l'API.");
         }
 
