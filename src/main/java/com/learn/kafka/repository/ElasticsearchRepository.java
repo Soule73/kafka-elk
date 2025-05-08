@@ -2,6 +2,7 @@ package com.learn.kafka.repository;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import co.elastic.clients.elasticsearch.indices.CreateIndexRequest;
 import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
 import co.elastic.clients.elasticsearch.core.BulkRequest;
@@ -12,6 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 =======
 import co.elastic.clients.elasticsearch.core.IndexRequest;
+=======
+import co.elastic.clients.elasticsearch.core.BulkRequest;
+import co.elastic.clients.elasticsearch.core.BulkResponse;
+import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
+>>>>>>> c550199 (Exchange API, realtime time application)
 import com.learn.kafka.model.ExchangeRate;
 import org.springframework.beans.factory.annotation.Autowired;
 >>>>>>> c6756da (Upgrade packages to latest versions)
@@ -20,9 +26,13 @@ import org.springframework.stereotype.Repository;
 import java.io.IOException;
 import java.util.List;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.util.stream.Collectors;
 =======
 >>>>>>> c6756da (Upgrade packages to latest versions)
+=======
+import java.util.stream.Collectors;
+>>>>>>> c550199 (Exchange API, realtime time application)
 
 @Repository
 public class ElasticsearchRepository {
@@ -85,17 +95,35 @@ public class ElasticsearchRepository {
         }
 =======
     public void indexAll(List<ExchangeRate> rates) {
-        rates.forEach(rate -> {
-            try {
-                IndexRequest<ExchangeRate> request = new IndexRequest.Builder<ExchangeRate>()
-                        .index("exchange-rates")
-                        .document(rate)
-                        .build();
-                elasticsearchClient.index(request);
-            } catch (IOException e) {
-                throw new RuntimeException("Erreur lors de l'indexation dans Elasticsearch : " + e.getMessage());
+        try {
+            // Préparer les opérations Bulk
+            List<BulkOperation> operations = rates.stream()
+                    .map(rate -> BulkOperation.of(op -> op
+                            .index(idx -> idx
+                                    .index("exchange-rates")
+                                    .document(rate)
+                            )
+                    ))
+                    .collect(Collectors.toList());
+
+            // Construire et exécuter la requête Bulk
+            BulkRequest bulkRequest = new BulkRequest.Builder()
+                    .operations(operations)
+                    .build();
+
+            BulkResponse response = elasticsearchClient.bulk(bulkRequest);
+
+            // Vérifier les erreurs dans la réponse
+            if (response.errors()) {
+                throw new RuntimeException("Certaines opérations Bulk ont échoué : " + response.items());
             }
+<<<<<<< HEAD
         });
 >>>>>>> c6756da (Upgrade packages to latest versions)
+=======
+        } catch (IOException e) {
+            throw new RuntimeException("Erreur lors de l'indexation en Bulk dans Elasticsearch : " + e.getMessage());
+        }
+>>>>>>> c550199 (Exchange API, realtime time application)
     }
 }
