@@ -7,6 +7,10 @@ import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Scheduler pour récupérer et traiter les taux de change à intervalles réguliers.
+ * Utilise le service ExchangeRateService pour effectuer les opérations nécessaires.
+ */
 @Component
 public class ExchangeRateScheduler {
 
@@ -15,7 +19,11 @@ public class ExchangeRateScheduler {
     @Autowired
     private ExchangeRateService exchangeRateService;
 
-    // Planifier la tâche pour s'exécuter toutes les 60 secondes
+    /**
+     * Planifie une tâche pour récupérer les taux de change toutes les 60 secondes.
+     * Cette méthode appelle le service ExchangeRateService pour récupérer, formater,
+     * publier et stocker les taux de change.
+     */
     @Scheduled(fixedRate = 60000)
     public void fetchExchangeRates() {
         logger.info("Début de l'exécution du scheduler pour récupérer les taux de change...");

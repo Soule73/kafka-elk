@@ -12,27 +12,38 @@ import org.springframework.context.annotation.Configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 
+/**
+ * Configuration pour le client Elasticsearch.
+ * Fournit un bean ElasticsearchClient configuré pour interagir avec un cluster Elasticsearch.
+ */
 @Configuration
 public class ElasticsearchConfig {
 
+    /**
+     * Adresse de l'hôte Elasticsearch.
+     */    
     @Value("${elasticsearch.host}")
     private String elasticsearchHost;
 
+    /**
+     * Port de l'hôte Elasticsearch.
+     */ 
     @Value("${elasticsearch.port}")
     private int elasticsearchPort;
 
+    /**
+     * Crée et configure un bean ElasticsearchClient.
+     * 
+     * @return une instance configurée de ElasticsearchClient.
+     */
     @Bean
     ElasticsearchClient elasticsearchClient() {
-        // Configurer RestClient avec un en-tête compatible Elasticsearch
+
         RestClientBuilder builder = RestClient.builder(new HttpHost(elasticsearchHost, elasticsearchPort));
         builder.setDefaultHeaders(new org.apache.http.Header[]{
                 new org.apache.http.message.BasicHeader("Content-Type", "application/json")
         });
 
-        // Désactiver la vérification stricte des en-têtes
-        builder.setStrictDeprecationMode(false);
-
-        // Ajouter un intercepteur pour inclure l'en-tête X-Elastic-Product dans la réponse
         builder.setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder.addInterceptorLast(
                 (HttpResponseInterceptor) (response, _) -> 
                         response.addHeader("X-Elastic-Product", "Elasticsearch")
@@ -40,7 +51,6 @@ public class ElasticsearchConfig {
 
         RestClient restClient = builder.build();
 
-        // Configurer le transport
         RestClientTransport transport = new RestClientTransport(
                 restClient,
                 new JacksonJsonpMapper(new ObjectMapper())
