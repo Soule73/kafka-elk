@@ -5,8 +5,8 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.5</version> <!-- Mise à jour vers la dernière version -->
-        <relativePath/> <!-- lookup parent from repository -->
+        <version>3.4.5</version>
+        <relativePath/>
     </parent>
     <groupId>com.learn</groupId>
     <artifactId>kafka</artifactId>
@@ -14,7 +14,7 @@
     <name>kafka</name>
     <description>Kafka project</description>
     <properties>
-        <java.version>23</java.version> <!-- Assurez-vous d'utiliser Java 17 ou supérieur -->
+        <java.version>17</java.version>
     </properties>
     <dependencies>
 
