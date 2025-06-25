@@ -21,7 +21,8 @@ import java.util.Map;
 
 /**
  * Service pour gérer les taux de change.
- * Fournit des méthodes pour récupérer, formater, publier et stocker les taux de change.
+ * Fournit des méthodes pour récupérer, formater, publier et stocker les taux de
+ * change.
  */
 @Service
 public class ExchangeRateService {
@@ -133,8 +134,8 @@ public class ExchangeRateService {
      * Crée une liste d'objets ExchangeRate à partir des données extraites.
      * 
      * @param baseCurrency la devise de base.
-     * @param timestamp le timestamp actuel.
-     * @param rates une map contenant les devises et leurs taux de change.
+     * @param timestamp    le timestamp actuel.
+     * @param rates        une map contenant les devises et leurs taux de change.
      * @return List<ExchangeRate> une liste d'objets ExchangeRate formatés.
      * @see ExchangeRate
      */

@@ -5,7 +5,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * Modèle représentant un taux de change.
- * Cette classe est utilisée pour stocker les données des taux de change dans MongoDB.
+ * Cette classe est utilisée pour stocker les données des taux de change dans
+ * MongoDB.
  */
 @Document(collection = "exchange_rates")
 public class ExchangeRate {
@@ -45,7 +46,7 @@ public class ExchangeRate {
      * Date de récupération des données.
      * Représente la date à laquelle les données ont été récupérées.
      */
-    private String date; 
+    private String date;
 
     /**
      * Retourne l'identifiant unique du document.
